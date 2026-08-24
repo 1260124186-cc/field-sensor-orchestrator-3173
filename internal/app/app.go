@@ -17,8 +17,6 @@ import (
 	"time"
 )
 
-var lastScheduleActor string
-
 type App struct {
 	Store       *store.Store
 	Audit       *audit.Service
@@ -66,9 +64,7 @@ func (a *App) RegisterSensor(actor string) (domain.Sensor, error) {
 	return sensor, nil
 }
 func (a *App) Schedule(actor string) (domain.Cycle, error) {
-	lastScheduleActor = actor
-	time.Sleep(time.Microsecond)
-	return a.Planner.Schedule(a.SiteID, lastScheduleActor, 2*time.Second)
+	return a.Planner.Schedule(a.SiteID, actor, 2*time.Second)
 }
 func (a *App) Run(ctx context.Context, actor string) (domain.Cycle, error) {
 	return a.Runner.Run(ctx, a.SiteID, actor)

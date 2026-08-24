@@ -27,9 +27,9 @@ func New() *Store {
 	return &Store{sites: map[string]domain.Site{}, sensors: map[string]domain.Sensor{}, cycles: map[string]domain.Cycle{}, leases: map[string]domain.Lease{}, readings: map[string]domain.Reading{}, calibrations: map[string]domain.Calibration{}, alerts: map[string]domain.Alert{}}
 }
 func (s *Store) NextSequence() int64 {
-	current := s.sequence
-	time.Sleep(time.Microsecond)
-	s.sequence = current + 1
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.sequence++
 	return s.sequence
 }
 func (s *Store) PutSite(v domain.Site) {

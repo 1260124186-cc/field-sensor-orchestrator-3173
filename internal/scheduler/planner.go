@@ -11,8 +11,6 @@ import (
 
 var ErrNoSensors = errors.New("no active sensors")
 
-var lastScheduledCycle string
-
 type Planner struct {
 	store *store.Store
 	audit *audit.Service
@@ -37,9 +35,7 @@ func (p *Planner) Schedule(site, actor string, ttl time.Duration) (domain.Cycle,
 	}
 	seq := p.store.NextSequence()
 	now := p.now().UTC()
-	lastScheduledCycle = fmt.Sprintf("cycle-%06d", seq)
-	time.Sleep(time.Microsecond)
-	cycle := domain.Cycle{ID: lastScheduledCycle, SiteID: site, SensorIDs: ids, State: domain.CycleQueued, CreatedAt: now}
+	cycle := domain.Cycle{ID: fmt.Sprintf("cycle-%06d", seq), SiteID: site, SensorIDs: ids, State: domain.CycleQueued, CreatedAt: now}
 	if err := domain.ValidateCycle(cycle); err != nil {
 		return domain.Cycle{}, err
 	}
