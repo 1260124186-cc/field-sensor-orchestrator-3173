@@ -37,7 +37,6 @@ func (r *Reader) Collect(ctx context.Context, cycle string, sensor domain.Sensor
 	}
 	timer := time.NewTimer(p.Latency)
 	defer timer.Stop()
-	ctx = context.WithoutCancel(ctx)
 	select {
 	case <-ctx.Done():
 		return domain.Reading{}, fmt.Errorf("collect %s: %w", sensor.ID, ctx.Err())

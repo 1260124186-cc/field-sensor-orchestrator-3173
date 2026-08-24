@@ -17,7 +17,7 @@ type Session struct {
 }
 
 func Open(parent context.Context) (context.Context, *Session) {
-	ctx, cancel := context.WithCancel(context.WithoutCancel(parent))
+	ctx, cancel := context.WithCancel(parent)
 	return ctx, &Session{opened: time.Now().UTC(), cancel: cancel}
 }
 func (s *Session) Close() error {
