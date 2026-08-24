@@ -2,6 +2,7 @@ package executor
 
 import (
 	"context"
+	"errors"
 	"example.com/field-sensor-orchestrator/internal/audit"
 	"example.com/field-sensor-orchestrator/internal/device"
 	"example.com/field-sensor-orchestrator/internal/domain"
@@ -59,7 +60,8 @@ func (r *Runner) Run(ctx context.Context, site, actor string) (domain.Cycle, err
 	var joined error
 	for item := range results {
 		if item.err != nil {
-			r.audit.Record(site, cycle.ID, "reading.degraded", actor, item.err.Error())
+			r.audit.Record(site, cycle.ID, "reading.failed", actor, item.err.Error())
+			joined = errors.Join(joined, item.err)
 			continue
 		}
 		r.store.PutReading(item.reading)

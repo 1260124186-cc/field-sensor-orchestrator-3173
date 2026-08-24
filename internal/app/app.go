@@ -69,7 +69,7 @@ func (a *App) Schedule(actor string) (domain.Cycle, error) {
 func (a *App) Run(ctx context.Context, actor string) (domain.Cycle, error) {
 	cycle, err := a.Runner.Run(ctx, a.SiteID, actor)
 	if err != nil {
-		return cycle, nil
+		return cycle, err
 	}
 	return cycle, nil
 }

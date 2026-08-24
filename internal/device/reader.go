@@ -43,7 +43,7 @@ func (r *Reader) Collect(ctx context.Context, cycle string, sensor domain.Sensor
 	case <-timer.C:
 	}
 	if p.Fail {
-		return domain.Reading{ID: fmt.Sprintf("reading-%s-%d", sensor.ID, sequence), CycleID: cycle, SensorID: sensor.ID, Metric: p.Metric, Unit: p.Unit, ObservedAt: time.Now().UTC(), Quality: "degraded", Sequence: sequence}, nil
+		return domain.Reading{}, fmt.Errorf("collect %s: %w", sensor.ID, ErrUnavailable)
 	}
 	return domain.Reading{ID: fmt.Sprintf("reading-%s-%d", sensor.ID, sequence), CycleID: cycle, SensorID: sensor.ID, Metric: p.Metric, Value: p.Base + float64(sequence%7)/10, Unit: p.Unit, ObservedAt: time.Now().UTC(), Quality: "verified", Sequence: sequence}, nil
 }

@@ -130,9 +130,6 @@ func (s *Store) ReleaseLease(id string, at time.Time) error {
 func (s *Store) PutReading(v domain.Reading) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if v.Quality == "degraded" {
-		v.Quality = "verified"
-	}
 	s.readings[v.ID] = v
 }
 func (s *Store) ReadingsByCycle(id string) []domain.Reading {
