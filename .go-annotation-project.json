@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "name": "field-sensor-orchestrator",
+  "summary": "面向野外生态观测的传感器生命周期与采集任务编排 CLI",
+  "user_roles": [
+    "现场技术员",
+    "观测协调员",
+    "数据管理员"
+  ],
+  "entities": [
+    "sensor",
+    "site",
+    "collection-cycle",
+    "lease",
+    "reading",
+    "calibration",
+    "alert",
+    "audit-event"
+  ],
+  "workflows": [
+    {
+      "id": "register-sensor",
+      "name": "登记传感器",
+      "actor": "现场技术员",
+      "entry": "CLI register-sensor",
+      "steps": [
+        "解析设备描述",
+        "写入传感器并记录审计事件"
+      ],
+      "success": "输出 registered sensor",
+      "failure": "非法站点或重复设备返回错误",
+      "verification": "命令输出包含 registered sensor"
+    },
+    {
+      "id": "schedule-cycle",
+      "name": "安排采集周期",
+      "actor": "观测协调员",
+      "entry": "CLI schedule-cycle",
+      "steps": [
+        "选择活动设备",
+        "建立任务与租约"
+      ],
+      "success": "输出 scheduled cycle",
+      "failure": "无可用设备时返回错误",
+      "verification": "命令输出包含 scheduled cycle"
+    },
+    {
+      "id": "run-cycle",
+      "name": "执行采集周期",
+      "actor": "观测协调员",
+      "entry": "CLI run-cycle",
+      "steps": [
+        "领取任务并传播上下文",
+        "并发采集后完成任务并释放资源"
+      ],
+      "success": "输出 completed cycle",
+      "failure": "设备故障或超时返回可识别错误",
+      "verification": "命令输出包含 completed cycle"
+    },
+    {
+      "id": "calibrate-sensor",
+      "name": "确认传感器校准",
+      "actor": "现场技术员",
+      "entry": "CLI calibrate-sensor",
+      "steps": [
+        "读取校准记录",
+        "更新设备状态并写审计"
+      ],
+      "success": "输出 calibrated sensor",
+      "failure": "校准结果无效时返回错误",
+      "verification": "命令输出包含 calibrated sensor"
+    },
+    {
+      "id": "ack-alert",
+      "name": "确认站点告警",
+      "actor": "观测协调员",
+      "entry": "CLI ack-alert",
+      "steps": [
+        "读取站点告警",
+        "确认并记录处理人"
+      ],
+      "success": "输出 acknowledged alert",
+      "failure": "告警不存在时返回错误",
+      "verification": "命令输出包含 acknowledged alert"
+    },
+    {
+      "id": "export-summary",
+      "name": "导出观测摘要",
+      "actor": "数据管理员",
+      "entry": "CLI export-summary",
+      "steps": [
+        "加载站点观测",
+        "聚合设备与任务健康度"
+      ],
+      "success": "输出 summary exported",
+      "failure": "站点不存在时返回错误",
+      "verification": "命令输出包含 summary exported"
+    }
+  ],
+  "module_plan": [
+    {
+      "package": "internal/app",
+      "workflow_ids": [
+        "register-sensor",
+        "schedule-cycle",
+        "run-cycle",
+        "calibrate-sensor",
+        "ack-alert",
+        "export-summary"
+      ]
+    },
+    {
+      "package": "internal/domain",
+      "workflow_ids": [
+        "register-sensor",
+        "calibrate-sensor"
+      ]
+    },
+    {
+      "package": "internal/scheduler",
+      "workflow_ids": [
+        "schedule-cycle"
+      ]
+    },
+    {
+      "package": "internal/executor",
+      "workflow_ids": [
+        "run-cycle"
+      ]
+    },
+    {
+      "package": "internal/alerts",
+      "workflow_ids": [
+        "ack-alert"
+      ]
+    },
+    {
+      "package": "internal/report",
+      "workflow_ids": [
+        "export-summary"
+      ]
+    },
+    {
+      "package": "internal/store",
+      "workflow_ids": [
+        "register-sensor",
+        "schedule-cycle",
+        "run-cycle",
+        "calibrate-sensor",
+        "ack-alert",
+        "export-summary"
+      ]
+    }
+  ],
+  "interfaces": [
+    {
+      "name": "sensorctl register-sensor",
+      "workflow_ids": [
+        "register-sensor"
+      ]
+    },
+    {
+      "name": "sensorctl schedule-cycle",
+      "workflow_ids": [
+        "schedule-cycle"
+      ]
+    },
+    {
+      "name": "sensorctl run-cycle",
+      "workflow_ids": [
+        "run-cycle"
+      ]
+    },
+    {
+      "name": "sensorctl calibrate-sensor",
+      "workflow_ids": [
+        "calibrate-sensor"
+      ]
+    },
+    {
+      "name": "sensorctl ack-alert",
+      "workflow_ids": [
+        "ack-alert"
+      ]
+    },
+    {
+      "name": "sensorctl export-summary",
+      "workflow_ids": [
+        "export-summary"
+      ]
+    }
+  ]
+}
