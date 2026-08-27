@@ -67,7 +67,7 @@ func (a *App) Schedule(actor string) (domain.Cycle, error) {
 	return a.Planner.Schedule(a.SiteID, actor, 2*time.Second)
 }
 func (a *App) Run(ctx context.Context, actor string) (domain.Cycle, error) {
-	return a.Runner.Run(context.Background(), a.SiteID, actor)
+	return a.Runner.Run(ctx, a.SiteID, actor)
 }
 func (a *App) Calibrate(actor string) (domain.Sensor, error) {
 	return a.Calibration.Apply("sensor-temp", actor, 0.25, 1.01)

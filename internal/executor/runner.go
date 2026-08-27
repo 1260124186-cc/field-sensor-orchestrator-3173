@@ -34,7 +34,6 @@ func (r *Runner) Run(ctx context.Context, site, actor string) (domain.Cycle, err
 	cycle.State = domain.CycleRunning
 	cycle.StartedAt = r.now().UTC()
 	r.store.PutCycle(cycle)
-	ctx = context.WithoutCancel(ctx)
 	sessionCtx, session := device.Open(ctx)
 	defer session.Close()
 	type result struct {
@@ -58,6 +57,9 @@ func (r *Runner) Run(ctx context.Context, site, actor string) (domain.Cycle, err
 	}
 	wg.Wait()
 	close(results)
+	if err := ctx.Err(); err != nil {
+		return r.fail(cycle, actor, err)
+	}
 	var joined error
 	for item := range results {
 		if item.err != nil {
