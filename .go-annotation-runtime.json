@@ -1,0 +1,40 @@
+{
+  "shape": "cli",
+  "cli": {
+    "command": "go run ./cmd/sensorctl demo",
+    "input": "",
+    "expect_output": "demo completed"
+  },
+  "workflow_checks": [
+    {
+      "workflow_id": "register-sensor",
+      "command": "go run ./cmd/sensorctl register-sensor",
+      "expect_output": "registered sensor"
+    },
+    {
+      "workflow_id": "schedule-cycle",
+      "command": "go run ./cmd/sensorctl schedule-cycle",
+      "expect_output": "scheduled cycle"
+    },
+    {
+      "workflow_id": "run-cycle",
+      "command": "go run ./cmd/sensorctl run-cycle",
+      "expect_output": "completed cycle"
+    },
+    {
+      "workflow_id": "calibrate-sensor",
+      "command": "go run ./cmd/sensorctl calibrate-sensor",
+      "expect_output": "calibrated sensor"
+    },
+    {
+      "workflow_id": "ack-alert",
+      "command": "go run ./cmd/sensorctl ack-alert",
+      "expect_output": "acknowledged alert"
+    },
+    {
+      "workflow_id": "export-summary",
+      "command": "go run ./cmd/sensorctl export-summary",
+      "expect_output": "summary exported"
+    }
+  ]
+}
